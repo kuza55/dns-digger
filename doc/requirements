@@ -1,0 +1,7 @@
+pika==0.9.8
+redis
+psycopg2
+tldextract
+SQLAlchemy
+lxml
+supervisor

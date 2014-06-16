@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+__author__ = "Kevin Warrick"
+__credits__ = ["Roberto Perdisci", "Kang Li"]
+__email__ = "kwarrick@uga.edu"
+
+""" 
+  Digger executable wrapper for running all components.
+  Each component uses an argparse subparser. 
+    e.g. $ ./digger dispatcher
+         $ ./digger scheduler
+"""
+
+import os
+import sys
+import argparse
+import ConfigParser
+
+sys.path.append(os.path.join('src', 'core'))
+sys.path.append(os.path.join('src', 'resolvers', 'python'))
+
+import aggregator
+import dispatcher
+import scheduler
+import archiver
+import resolver
+
+if __name__ != '__main__':
+	raise Exception('not a module')
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-c', '--config', type=argparse.FileType('r'), metavar='digger.conf', 
+					          default='conf/digger.conf', help='configuration file')
+subparsers = parser.add_subparsers(dest='command', help='commands')
+
+# AGGREGATOR
+aggregator_parser = subparsers.add_parser('aggregator')	
+aggregator_parser.add_argument('-r', '--resolvers', help="lists of recursives")
+aggregator_parser.add_argument('-d', '--domains', help="list of domains to query")
+aggregator_parser.add_argument('-s', '--source', default='input list')
+
+# DISPATCHER
+dispatcher_parser = subparsers.add_parser('dispatcher')	
+dispatcher_parser.add_argument('-v', '--verbose', action='store_true')
+
+# SCHEDULER
+dispatcher_parser = subparsers.add_parser('scheduler')	
+dispatcher_parser.add_argument('-v', '--verbose', action='store_true')
+
+# RESOLVER
+resolver_parser = subparsers.add_parser('resolver')	
+resolver_parser.add_argument('-v', '--verbose', action='store_true')
+resolver_parser.add_argument('--host', required=True, help="RabbitMQ server hostname")
+resolver_parser.add_argument('--user', required=True, help="RabbitMQ server username")
+resolver_parser.add_argument('--password', required=True, help="RabbitMQ server password")
+resolver_parser.add_argument('--port', default=5672, help="RabbitMQ server port")
+
+# ARCHIVER
+archiver_parser = subparsers.add_parser('archiver')	
+archiver_parser.add_argument('--queue', dest='queue', default='archive', help='queue')
+
+args = parser.parse_args()
+
+# CONFIG
+config = ConfigParser.SafeConfigParser()
+config.optionxform = str
+config.readfp(args.config)
+
+cmd = None
+if args.command == 'aggregator':
+	cmd = aggregator.Aggregator(args.resolvers, args.domains, args.source, config)
+elif args.command == 'dispatcher':
+	cmd = dispatcher.Dispatcher(config, args.verbose)
+elif args.command == 'scheduler':
+	cmd = scheduler.Scheduler(config, args.verbose)
+elif args.command == 'resolver':
+	cmd = resolver.Resolver(args.host, args.port, args.user, args.password, args.verbose)
+elif args.command == 'archiver':
+	cmd = archiver.Archiver(args.queue, config)
+	
+sys.exit(cmd.run())
+

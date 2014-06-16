@@ -1,0 +1,1 @@
+java -cp build/classes:lib/commons-cli-1.2.jar:lib/dnsjava-2.1.4.jar:lib/gson-2.2.2.jar:lib/rabbitmq-client.jar edu.uga.cs.digger.resolver.Resolver -host localhost -port 5672 -user digger -pass rabbitrabbit!

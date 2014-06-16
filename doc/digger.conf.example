@@ -1,0 +1,25 @@
+[database]
+dialect = postgres
+database = digger
+host = 
+user = 
+password = 
+port = 5432
+
+[rabbitmq]
+host = 127.0.0.1
+port = 5672
+user = digger
+password = 
+
+[redis]
+host = 127.0.0.1
+port = 6379
+
+[query]
+type = A
+minttl = 3600
+maxttl = 21600
+resolvers = 3
+distribution = 1
+

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Author: Kevin Warrick
+# E-mail: kwarrick@uga.edu
+
+if [ ! -f build/classes/edu/uga/cs/digger/client/Resolver.class ]; then
+	ant;
+fi
+
+exec java -cp  build/classes$(printf ":%s" lib/*.jar) edu.uga.cs.digger.client.Resolver $*
+
+#EOF

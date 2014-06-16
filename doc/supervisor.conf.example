@@ -1,0 +1,25 @@
+[unix_http_server]
+file=tmp/supervisor.sock
+
+[supervisord]
+logfile=log/supervisord.log
+pidfile=tmp/supervisord.pid
+
+[supervisorctl]
+serverurl=unix://tmp/supervisor.sock
+
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+[inet_http_server]
+port=127.0.0.1:8001
+
+[program:dispatcher]
+command=./digger dispatcher
+
+[program:scheduler]
+command=./digger scheduler
+
+[program:archiver]
+command=./digger archiver
+
